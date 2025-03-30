@@ -178,22 +178,21 @@ class User(object):
     def set_username(self, an_object):
         self.username = an_object
 
-    def calculate_score(self):
+    def claculate_kind_score(kind_votes, score_points):
         score = 0
-        for question in self.questions:
-            pv = len(question.positive_votes())
-            nv = len(question.negative_votes())
+        for kind in kind_votes:
+            pv = len(kind.positive_votes())
+            nv = len(kind.negative_votes())
             if pv > nv:
-                score += 10
-
-        # Sumar puntos por respuestas con más votos positivos que negativos
-        for answer in self.answers:
-            pv = len(answer.positive_votes())
-            nv = len(answer.negative_votes())
-            if pv > nv:
-                score += 20
-
+                score += score_points
         return score
+
+    def calculate_score(self):
+        question_score = self.claculate_kind_score(self.questions, 10)
+        answer_score = self.claculate_kind_score(self.answers, 20)
+
+        return question_score + answer_score
+        
 
 
 class Vote(object):
