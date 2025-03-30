@@ -1,5 +1,5 @@
-
 from datetime import datetime
+
 
 class Votes: #clase base para manejar los votos de Answer y Question
     def __init__(self):
@@ -7,8 +7,8 @@ class Votes: #clase base para manejar los votos de Answer y Question
 
     def get_votes(self):
         return self.votes
-    
-    def add_vote(self, a_vote):
+
+      def add_vote(self, a_vote):
         if any(vote.user == a_vote.user for vote in self.votes):
             raise ValueError("Este usuario ya ha votado")
         self.votes.append(a_vote)
@@ -50,9 +50,9 @@ class Answer(object, Votes, Descripcion):
 	
     def get_timestamp(self):
         return self.timestamp
-    
 
 class Question(Votes, Descripcion):
+
     def __init__(self, user, title, description, topics=[]):
         Votes().__init__()
         Descripcion.__init__(self, description)
@@ -96,8 +96,8 @@ class Question(Votes, Descripcion):
         
         return sorted(self.answers, key=lambda a: len(a.positive_votes()) - len(a.negative_votes()), reverse=True)[0]
 
-
 class Topic(Descripcion):
+
     def __init__(self, name, description):
         Descripcion.__init__(self, description)
         
