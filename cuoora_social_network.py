@@ -1,8 +1,8 @@
 from datetime import datetime
 from abc import ABC, abstractmethod
 
-# Interfaces
-class Votable(ABC):
+# =================== INTERFACES =================== #
+class Votable(ABC): # Interfaz para objetos que pueden recibir votos
     @abstractmethod
     def add_vote(self, vote):
         pass
@@ -19,7 +19,7 @@ class Votable(ABC):
     def negative_votes(self):
         pass
 
-class Describable(ABC):
+class Describable(ABC): # Interfaz para objetos que tienen una descripción
     @abstractmethod
     def get_description(self):
         pass
@@ -28,8 +28,9 @@ class Describable(ABC):
     def set_description(self, new_description):
         pass
 
-# Clases de utilidad (managers)
-class VotesManager:
+
+# =================== CLASES DE CONTROL =================== #
+class VotesManager: # Gestiona la colección de votos y proporciona operaciones sobre ellos
     def __init__(self):
         self.votes = []
 
@@ -44,7 +45,7 @@ class VotesManager:
     def filter_votes(self, condition):
         return [vote for vote in self.votes if condition(vote)]
 
-class DescriptionManager:
+class DescriptionManager: # Encapsula la gestión de la descripción de un objeto
     def __init__(self, description):
         self.description = description
 
@@ -54,8 +55,9 @@ class DescriptionManager:
     def set_description(self, an_object):
         self.description = an_object
 
-# Entidades principales
-class Answer(Votable, Describable):
+
+# =================== ENTIDADES PRINCIPALES =================== #
+class Answer(Votable, Describable): # Representa una respuesta a una pregunta, puede recibir votos y tiene descripción
     def __init__(self, question, user, description):
         self.votes_manager = VotesManager()
         self.description_manager = DescriptionManager(description)
@@ -65,34 +67,25 @@ class Answer(Votable, Describable):
         question.add_answer(self)
         user.add_answer(self)
 
-    def add_vote(self, vote): 
-        self.votes_manager.add_vote(vote)
+    def add_vote(self, vote): self.votes_manager.add_vote(vote)
     
-    def get_votes(self): 
-        return self.votes_manager.get_votes()
+    def get_votes(self): return self.votes_manager.get_votes()
     
-    def positive_votes(self): 
-        return self.votes_manager.filter_votes(lambda vote: vote.is_like())
+    def positive_votes(self): return self.votes_manager.filter_votes(lambda vote: vote.is_like())
     
-    def negative_votes(self): 
-        return self.votes_manager.filter_votes(lambda vote: not vote.is_like())
+    def negative_votes(self): return self.votes_manager.filter_votes(lambda vote: not vote.is_like())
 
-    def get_description(self): 
-        return self.description_manager.get_description()
+    def get_description(self): return self.description_manager.get_description()
     
-    def set_description(self, new_description): 
-        self.description_manager.set_description(new_description)
+    def set_description(self, new_description): self.description_manager.set_description(new_description)
 
-    def get_question(self): 
-        return self.question
+    def get_question(self): return self.question
     
-    def get_user(self): 
-        return self.user
+    def get_user(self): return self.user
     
-    def get_timestamp(self): 
-        return self.timestamp
+    def get_timestamp(self): return self.timestamp
 
-class Question(Votable, Describable):
+class Question(Votable, Describable): # Representa una pregunta del sistema, puede recibir votos y tiene descripción
     def __init__(self, user, title, description, topics=None):
         if topics is None:
             topics = []
@@ -109,40 +102,30 @@ class Question(Votable, Describable):
         for topic in topics:
             self.add_topic(topic)
 
-    def add_vote(self, vote): 
-        self.votes_manager.add_vote(vote)
+    def add_vote(self, vote): self.votes_manager.add_vote(vote)
     
-    def get_votes(self): 
-        return self.votes_manager.get_votes()
+    def get_votes(self): return self.votes_manager.get_votes()
     
-    def positive_votes(self): 
-        return self.votes_manager.filter_votes(lambda vote: vote.is_like())
+    def positive_votes(self): return self.votes_manager.filter_votes(lambda vote: vote.is_like())
     
-    def negative_votes(self): 
-        return self.votes_manager.filter_votes(lambda vote: not vote.is_like())
+    def negative_votes(self): return self.votes_manager.filter_votes(lambda vote: not vote.is_like())
 
-    def get_description(self): 
-        return self.description_manager.get_description()
+    def get_description(self): return self.description_manager.get_description()
     
-    def set_description(self, new_description): 
-        self.description_manager.set_description(new_description)
+    def set_description(self, new_description): self.description_manager.set_description(new_description)
 
-    def get_topics(self): 
-        return self.topics.copy()
+    def get_topics(self): return self.topics.copy()
 
-    def get_title(self): 
-        return self.title
+    def get_title(self): return self.title
     
     def set_title(self, new_title):
         if not new_title or not isinstance(new_title, str):
             raise ValueError("El título debe ser un string no vacío")
         self.title = new_title
 
-    def get_user(self): 
-        return self.user
+    def get_user(self): return self.user
 
-    def get_timestamp(self): 
-        return self.timestamp
+    def get_timestamp(self): return self.timestamp
 
     def add_topic(self, topic):
         if topic in self.topics: 
@@ -158,12 +141,9 @@ class Question(Votable, Describable):
         if not self.answers:
             return None
         
-        return max(
-            self.answers,
-            key=lambda a: len(a.positive_votes()) - len(a.negative_votes())
-        )
+        return max(self.answers, key=lambda a: len(a.positive_votes()) - len(a.negative_votes()))
 
-class Topic(Describable):
+class Topic(Describable): # Representa un tema o categoría para clasificar preguntas
     def __init__(self, name, description):
         self.description_manager = DescriptionManager(description)
         self.name = name
@@ -173,22 +153,18 @@ class Topic(Describable):
         if a_question not in self.questions:
             self.questions.append(a_question)
 
-    def get_name(self):
-        return self.name
+    def get_name(self): return self.name
 
-    def set_name(self, an_object):
-        self.name = an_object
+    def set_name(self, an_object): self.name = an_object
 
-    def get_questions(self):
-        return self.questions.copy()
+    def get_questions(self): return self.questions.copy()
     
-    def get_description(self):
-        return self.description_manager.get_description()
+    def get_description(self): return self.description_manager.get_description()
     
-    def set_description(self, new_description):
-        self.description_manager.set_description(new_description)
+    def set_description(self, new_description): self.description_manager.set_description(new_description)
 
-class User:
+
+class User: # Representa un usuario del sistema con sus preguntas, respuestas y relaciones
     def __init__(self, username, password):
         self.username = username
         self.password = password
@@ -202,17 +178,13 @@ class User:
         if a_topic not in self.topics_of_interest:
             self.topics_of_interest.append(a_topic)
 
-    def get_votes(self):
-        return self.votes.copy()
+    def get_votes(self): return self.votes.copy()
 
-    def add_question(self, a_question):
-        self.questions.append(a_question)
+    def add_question(self, a_question): self.questions.append(a_question)
 
-    def get_username(self):
-        return self.username
+    def get_username(self): return self.username
 
-    def get_questions(self):
-        return self.questions.copy()
+    def get_questions(self): return self.questions.copy()
 
     def follow(self, a_user):
         if a_user not in self.following:
@@ -222,31 +194,22 @@ class User:
         if a_user in self.following:
             self.following.remove(a_user)
 
-    def get_answers(self):
-        return self.answers.copy()
+    def get_answers(self): return self.answers.copy()
 
-    def get_following(self):
-        return self.following.copy()
+    def get_following(self): return self.following.copy()
 
-    def add_vote(self, a_vote):
-        self.votes.append(a_vote)
+    def add_vote(self, a_vote): self.votes.append(a_vote)
 
-    def get_password(self):
-        return self.password
+    def get_password(self): return self.password
 
-    def add_answer(self, an_answer):
-        self.answers.append(an_answer)
+    def add_answer(self, an_answer): self.answers.append(an_answer)
 
-    def get_topics_of_interest(self):
-        return self.topics_of_interest.copy()
+    def get_topics_of_interest(self): return self.topics_of_interest.copy()
 
-    def set_password(self, an_object):
-        self.password = an_object
+    def set_password(self, an_object): self.password = an_object
 
-    def set_username(self, an_object):
-        self.username = an_object
+    def set_username(self, an_object): self.username = an_object
 
-    @staticmethod
     def calculate_kind_score(kind_votes, score_points):
         score = 0
         for kind in kind_votes:
@@ -261,88 +224,84 @@ class User:
         answer_score = User.calculate_kind_score(self.answers, 20)
         return question_score + answer_score
 
-class Vote:
+class Vote: # Representa un voto dado por un usuario
     def __init__(self, user, is_like=True):
         self.is_positive_vote = is_like
         self.timestamp = datetime.now()
         self.user = user
         user.add_vote(self)
 
-    def is_like(self):
-        return self.is_positive_vote
+    def is_like(self): return self.is_positive_vote
 
-    def get_user(self):
-        return self.user
+    def get_user(self): return self.user
 
-    def like(self):
-        self.is_positive_vote = True
+    def like(self): self.is_positive_vote = True
 
-    def dislike(self):
-        self.is_positive_vote = False
+    def dislike(self): self.is_positive_vote = False
 
-# Interfaz para recuperar preguntas
-class IQuestionRetriever(ABC):
+
+# =================== SISTEMA DE RECUPERACIÓN DE PREGUNTAS =================== #
+class IQuestionRetriever(ABC): # Interfaz base para recuperar preguntas
     @abstractmethod
-    def retrieve_questions(self, all_questions, user):
-        pass
+    def retrieve_questions(self, all_questions, user): pass
 
-# Implementaciones concretas de recuperadores
-class SocialQuestionRetriever(IQuestionRetriever):
+    def _filter_and_sort(self, questions_collection, user, limit=100):
+        if not questions_collection:
+            return []
+            
+        # Ordenar por número de votos positivos
+        temp = sorted(questions_collection, key=lambda q: len(q.positive_votes()))
+        
+        # Limitar a 'limit' resultados (máximo 100)
+        result = temp[-min(limit, len(temp)):]
+        
+        # Filtrar preguntas hechas por el usuario actual
+        return [q for q in result if q.get_user() != user]
+
+# =============== ESTRATEGIAS DE RECUPERACIÓN DE PREGUNTAS =================== #
+class SocialQuestionRetriever(IQuestionRetriever): # Recupera preguntas basadas en los usuarios
     def retrieve_questions(self, all_questions, user):
         following_col = []
         for follow in user.get_following():
             following_col.extend(follow.get_questions())
         
-        if not following_col:
-            return []
-            
-        temp = sorted(following_col, key=lambda q: len(q.positive_votes()))
-        result = temp[-min(100, len(temp)):]
-        return [q for q in result if q.get_user() != user]
+        return self._filter_and_sort(following_col, user)
 
-class TopicsQuestionRetriever(IQuestionRetriever):
+class TopicsQuestionRetriever(IQuestionRetriever): # Recupera preguntas basadas en los temas de interés del usuario
     def retrieve_questions(self, all_questions, user):
         topics_col = []
         for topic in user.get_topics_of_interest():
             topics_col.extend(topic.get_questions())
         
-        if not topics_col:
-            return []
-            
-        temp = sorted(topics_col, key=lambda q: len(q.positive_votes()))
-        result = temp[-min(100, len(temp)):]
-        return [q for q in result if q.get_user() != user]
+        return self._filter_and_sort(topics_col, user)
 
-class NewsQuestionRetriever(IQuestionRetriever):
-    def retrieve_questions(self, all_questions, user):
-        news_col = [q for q in all_questions if q.get_timestamp().date() == datetime.today().date()]
-        
-        if not news_col:
-            return []
-            
-        temp = sorted(news_col, key=lambda q: len(q.positive_votes()))
-        result = temp[-min(100, len(temp)):]
-        return [q for q in result if q.get_user() != user]
 
-class PopularTodayQuestionRetriever(IQuestionRetriever):
+class TodayQuestionRetriever(IQuestionRetriever): # Clase base para recuperadores que trabajan con preguntas de hoy
+    def _get_today_questions(self, all_questions):
+        return [q for q in all_questions if q.get_timestamp().date() == datetime.today().date()]
+
+
+class NewsQuestionRetriever(TodayQuestionRetriever): # Recupera preguntas creadas hoy
     def retrieve_questions(self, all_questions, user):
-        today_questions = [q for q in all_questions if q.get_timestamp().date() == datetime.today().date()]
+        today_questions = self._get_today_questions(all_questions)
+        return self._filter_and_sort(today_questions, user)
+
+
+class PopularTodayQuestionRetriever(TodayQuestionRetriever): # Recupera praguntas creadas hoy con muchos votos positivos
+    def retrieve_questions(self, all_questions, user):
+        today_questions = self._get_today_questions(all_questions)
         
         if not today_questions:
             return []
-            
+        
         average_votes = sum(len(q.positive_votes()) for q in today_questions) / len(today_questions)
         popular_questions = [q for q in today_questions if len(q.positive_votes()) > average_votes]
         
-        if not popular_questions:
-            return []
-            
-        temp = sorted(popular_questions, key=lambda q: len(q.positive_votes()))
-        result = temp[-min(100, len(temp)):]
-        return [q for q in result if q.get_user() != user]
+        return self._filter_and_sort(popular_questions, user)
 
-# Fábrica para crear los recuperadores
-class QuestionRetrieverFactory:
+
+# =================== FÁBRICA Y SISTEMA PRINCIPAL =================== #
+class QuestionRetrieverFactory: # Fábrica que crea las diferentes implementaciones de recuperadores de preguntas
     @staticmethod
     def create_social():
         return SocialQuestionRetriever()
@@ -359,8 +318,8 @@ class QuestionRetrieverFactory:
     def create_popular_today():
         return PopularTodayQuestionRetriever()
 
-# Sistema principal
-class CuOOra:
+
+class CuOOra: # Clase principal que representa todo el sistema CuOOra
     def __init__(self):
         self.questions = []
         self.retriever_factory = QuestionRetrieverFactory()
