@@ -1,73 +1,70 @@
 from datetime import datetime
 
-########################################################################
-class Votos:
-    def positive_votes(self):
-        r = []
-        for vote in self.votes:
-            if vote.is_like():
-                r.append(vote)
-        return r
-    
-    def negative_votes(self):
-        r = []
-        for vote in self.votes:
-            if not vote.is_like():
-                r.append(vote)
-        return r
-    
-    def add_vote(self, a_vote):
+
+class Votes: #clase base para manejar los votos de Answer y Question
+    def __init__(self):
+        self.votes = []
+
+    def get_votes(self):
+        return self.votes
+
+      def add_vote(self, a_vote):
         if any(vote.user == a_vote.user for vote in self.votes):
             raise ValueError("Este usuario ya ha votado")
         self.votes.append(a_vote)
-########################################################################
+    
+    def filter_votes(self, condition): # filtra los votos según la condición dada
+        return [vote for vote in self.votes if condition(vote)]
+    
+    def positive_votes(self):
+        return self.filter_votes(lambda vote: vote.is_like()) #votos condicion positiva
+    
+    def negative_votes(self):
+        return self.filter_votes(lambda vote: not vote.is_like()) #votos condicion negativa
 
-class Answer(Votos, object):
+class Descripcion: #clase base para manejar la descripción de Answer, Question y Topic
+    def __init__(self, description):
+        self.description = description
+
+    def get_description(self):
+        return self.description
+    
+    def set_description(self, an_object):
+        self.description = an_object
+
+class Answer(object, Votes, Descripcion):
     def __init__(self, question, user, description):
-        self.votes = []
+        Votes().__init__()
+        Descripcion.__init__(self, description)
+
         self.timestamp = datetime.now()
         self.user = user
-        self.description = description
         self.question = question
         self.question.add_answer(self)
-	
+
     def get_question(self):
         return self.question
 		
     def get_user(self):
         return self.user
-
-    def set_description(self, description):
-        self.description = description
-
-    def get_description(self):
-        return self.description
 	
     def get_timestamp(self):
         return self.timestamp
 
-    def get_votes(self):
-        return self.votes
+class Question(Votes, Descripcion):
 
-
-class Question(Votos):
     def __init__(self, user, title, description, topics=[]):
+        Votes().__init__()
+        Descripcion.__init__(self, description)
+
         self.timestamp = datetime.now()
         self.title = title
-        self.description = description
         self.answers = []
-        self.votes = []
         self.user = user
         self.user.add_question(self)
         self.topics = []
         for topic in topics:
             self.add_topic(topic)
-
-    def set_description(self, an_object):
-        self.description = an_object
-
-    def get_description(self):
-        return self.description
 
     def get_topics(self):
         return self.topics
@@ -84,9 +81,6 @@ class Question(Votos):
     def get_timestamp(self):
         return self.timestamp
 
-    def get_votes(self):
-        return self.votes
-
     def add_topic(self, a_topic):
         if a_topic in self.topics: 
             raise ValueError("El tópico ya está agregado.")
@@ -102,20 +96,16 @@ class Question(Votos):
         
         return sorted(self.answers, key=lambda a: len(a.positive_votes()) - len(a.negative_votes()), reverse=True)[0]
 
-class Topic:
+class Topic(Descripcion):
+
     def __init__(self, name, description):
+        Descripcion.__init__(self, description)
+        
         self.name = name
-        self.description = description
         self.questions = []
 
     def add_question(self, a_question):
         self.questions.append(a_question)
-
-    def get_description(self):
-        return self.description
-
-    def set_description(self, an_object):
-        self.description = an_object
 
     def get_name(self):
         return self.name
@@ -188,22 +178,21 @@ class User(object):
     def set_username(self, an_object):
         self.username = an_object
 
-    def calculate_score(self):
+    def claculate_kind_score(kind_votes, score_points):
         score = 0
-        for question in self.questions:
-            pv = len(question.positive_votes())
-            nv = len(question.negative_votes())
+        for kind in kind_votes:
+            pv = len(kind.positive_votes())
+            nv = len(kind.negative_votes())
             if pv > nv:
-                score += 10
-
-        # Sumar puntos por respuestas con más votos positivos que negativos
-        for answer in self.answers:
-            pv = len(answer.positive_votes())
-            nv = len(answer.negative_votes())
-            if pv > nv:
-                score += 20
-
+                score += score_points
         return score
+
+    def calculate_score(self):
+        question_score = self.claculate_kind_score(self.questions, 10)
+        answer_score = self.claculate_kind_score(self.answers, 20)
+
+        return question_score + answer_score
+        
 
 
 class Vote(object):
