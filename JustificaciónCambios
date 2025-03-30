@@ -1,0 +1,11 @@
+Se ha reemplazado la importación de QuestionRetriever por QuestionRetrieverFactory, ya que la nueva implementación utiliza el patrón de fábrica.
+
+Se han modificado las referencias directas a atributos internos por sus métodos getter correspondientes:
+  question.votes → question.get_votes()
+  question.topics → question.get_topics()
+  answers.extend([self.answer1, self.answer2]) → add_answer(self, answer)
+Esto se hace para respetar el encapsulamiento implementado en el código actualizado.
+
+Se ha reorganizado los tests para que sigan el mismo orden que el código principal.
+
+Se simplificó el test test_popular_today_retrieval eliminando el user2.add_vote(vote), ya que el constructor de Vote ya maneja esa relación.
