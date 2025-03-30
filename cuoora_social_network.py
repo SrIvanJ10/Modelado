@@ -1,86 +1,70 @@
 
 from datetime import datetime
 
-class Answer(object):
-    def __init__(self, question, user, description):
+class Votes: #clase base para manejar los votos de Answer y Question
+    def __init__(self):
         self.votes = []
+
+    def get_votes(self):
+        return self.votes
+    
+    def add_vote(self, a_vote):
+        if any(vote.user == a_vote.user for vote in self.votes):
+            raise ValueError("Este usuario ya ha votado")
+        self.votes.append(a_vote)
+    
+    def filter_votes(self, condition): # filtra los votos según la condición dada
+        return [vote for vote in self.votes if condition(vote)]
+    
+    def positive_votes(self):
+        return self.filter_votes(lambda vote: vote.is_like()) #votos condicion positiva
+    
+    def negative_votes(self):
+        return self.filter_votes(lambda vote: not vote.is_like()) #votos condicion negativa
+
+class Descripcion: #clase base para manejar la descripción de Answer, Question y Topic
+    def __init__(self, description):
+        self.description = description
+
+    def get_description(self):
+        return self.description
+    
+    def set_description(self, an_object):
+        self.description = an_object
+
+class Answer(object, Votes, Descripcion):
+    def __init__(self, question, user, description):
+        Votes().__init__()
+        Descripcion.__init__(self, description)
+
         self.timestamp = datetime.now()
         self.user = user
-        self.description = description
         self.question = question
         self.question.add_answer(self)
 
-    def positive_votes(self):
-        r = []
-        for vote in self.votes:
-            if vote.is_like():
-                r.append(vote)
-        return r
-	
-    def negative_votes(self):
-        r = []
-        for vote in self.votes:
-            if not vote.is_like():
-                r.append(vote)
-        return r
-	
     def get_question(self):
         return self.question
 		
     def get_user(self):
         return self.user
-
-    def set_description(self, description):
-        self.description = description
-
-    def get_description(self):
-        return self.description
 	
     def get_timestamp(self):
         return self.timestamp
-
-    def add_vote(self, a_vote):
-        if any(vote.user == a_vote.user for vote in self.votes):
-            raise ValueError("Este usuario ya ha votado")
-        self.votes.append(a_vote)
-
-    def get_votes(self):
-        return self.votes
     
 
-class Question:
+class Question(Votes, Descripcion):
     def __init__(self, user, title, description, topics=[]):
+        Votes().__init__()
+        Descripcion.__init__(self, description)
+
         self.timestamp = datetime.now()
         self.title = title
-        self.description = description
         self.answers = []
-        self.votes = []
         self.user = user
         self.user.add_question(self)
         self.topics = []
         for topic in topics:
             self.add_topic(topic)
-
-    def set_description(self, an_object):
-        self.description = an_object
-
-
-    def get_description(self):
-        return self.description
-
-    def positive_votes(self):
-        r = []
-        for vote in self.votes:
-            if vote.is_like():
-                r.append(vote)
-        return r
-
-    def negative_votes(self):
-        r = []
-        for vote in self.votes:
-            if not vote.is_like():
-                r.append(vote)
-        return r
 
     def get_topics(self):
         return self.topics
@@ -96,14 +80,6 @@ class Question:
 
     def get_timestamp(self):
         return self.timestamp
-
-    def get_votes(self):
-        return self.votes
-
-    def add_vote(self, a_vote):
-        if any(vote.user == a_vote.user for vote in self.votes):
-            raise ValueError("Este usuario ya ha votado")
-        self.votes.append(a_vote)
 
     def add_topic(self, a_topic):
         if a_topic in self.topics: 
@@ -121,20 +97,15 @@ class Question:
         return sorted(self.answers, key=lambda a: len(a.positive_votes()) - len(a.negative_votes()), reverse=True)[0]
 
 
-class Topic:
+class Topic(Descripcion):
     def __init__(self, name, description):
+        Descripcion.__init__(self, description)
+        
         self.name = name
-        self.description = description
         self.questions = []
 
     def add_question(self, a_question):
         self.questions.append(a_question)
-
-    def get_description(self):
-        return self.description
-
-    def set_description(self, an_object):
-        self.description = an_object
 
     def get_name(self):
         return self.name
