@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}CuOOra{% endblock %}
+
+{% block content %}
+<h1>Preguntas y respuesta</h1>
+<ul>    
+    {% for question in questions %}
+        <li> {{ question.tittle }} </li>
+    {% endfor %}
+<ul>
+   
+<ul>
+    {% for answer in answers %}
+    <li> {{ answer.question }} </li>
+{% endfor %}
+</ul>
+
+{% endblock %}
