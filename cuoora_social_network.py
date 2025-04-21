@@ -28,7 +28,6 @@ class Describable(ABC): # Interfaz para objetos que tienen una descripción
     def set_description(self, new_description):
         pass
 
-
 # =================== CLASES DE CONTROL =================== #
 class VotesManager: # Gestiona la colección de votos y proporciona operaciones sobre ellos
     def __init__(self):
