@@ -231,13 +231,6 @@
             </div>
         </div>
     </div>
-     
-    <div class="notification-summary">
-        <p>{{ notifications|length }} notificación(es)</p>
-        {% if unread_notifications %}
-            <a href="{% url 'mark_all_as_read' %}" class="btn btn-sm btn-secondary">Marcar todas como leídas</a>
-        {% endif %}
-    </div>
     
     {% if notifications %}
         <div class="notifications-list">
