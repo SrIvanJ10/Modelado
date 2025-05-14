@@ -1,0 +1,320 @@
+{% block content %}
+<style>
+    /* Estilos base */
+    .main-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        color: #1a1a1a;
+    }
+
+    .nav-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid #e0e0e0;
+        margin-bottom: 2rem;
+    }
+
+    .filter-select {
+        padding: 0.5rem 1rem;
+        border: 2px solid #0066cc;
+        border-radius: 1.5rem;
+        background: white;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .nav-button {
+        padding: 0.5rem 1.25rem;
+        border-radius: 1.5rem;
+        background: #f0f2f5;
+        color: #0066cc;
+        text-decoration: none;
+        border: 2px solid transparent;
+        transition: all 0.2s;
+        font-weight: 500;
+    }
+    
+    .nav-button:hover {
+        background: #e4e9f0;
+        color: #0052b3;
+    }
+    
+    .username-display {
+        font-weight: 500;
+        color: #666;
+        padding: 0.5rem 1rem;
+        background: #f0f2f5;
+        border-radius: 1.5rem;
+    }
+
+    .question-detail {
+        background: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .question-detail h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: #1a1a1a;
+    }
+
+    .question-detail p {
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+    }
+
+    .question-meta {
+        display: flex;
+        gap: 1.5rem;
+        font-size: 0.85rem;
+        color: #808080;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    
+    .meta-item a {
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.2s;
+    }
+    
+    .meta-item a:hover {
+        transform: scale(1.2);
+    }
+
+    .questions-header {
+        font-size: 1.4rem;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+
+    .answers-list {
+        margin-top: 2rem;
+    }
+
+    .answer-card {
+        background: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .answer-card.my-answer {
+        border-left: 4px solid #0066cc;
+    }
+    
+    .answer-card p {
+        color: #333;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        color: #888;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 0.75rem;
+        margin: 1.5rem 0;
+    }
+
+    /* Estilos para el formulario de respuesta */
+    .answer-form {
+        background: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .answer-form h3 {
+        margin-bottom: 1.5rem;
+        color: #333;
+        font-size: 1.3rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #444;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #d0d0d0;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #0066cc;
+        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
+    }
+    
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+    
+    /* Mensajes de error */
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 0.5rem 0 0;
+        color: #e53e3e;
+        font-size: 0.85rem;
+    }
+    
+    .errorlist li {
+        margin-bottom: 0.25rem;
+    }
+    
+    .error-message {
+        color: #e53e3e;
+        background-color: #fff5f5;
+        border-left: 3px solid #e53e3e;
+        padding: 0.75rem 1rem;
+        border-radius: 0.25rem;
+        margin-top: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .btn {
+        padding: 0.5rem 1.25rem;
+        border-radius: 1.5rem;
+        background: #0066cc;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .btn:hover {
+        background: #0052b3;
+    }
+
+    @media (max-width: 640px) {
+        .nav-section {
+            flex-direction: column;
+        }
+        
+        .action-buttons {
+            width: 100%;
+            justify-content: space-between;
+        }
+        
+        .question-meta {
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+    }
+</style>
+
+<div class="main-container">
+    <div class="nav-section">
+        <h2 class="questions-header">Questions</h2>
+        
+        <div class="action-buttons">
+            <a href="/" class="nav-button">Home</a>
+            <span class="username-display">{{ request.user.username }}</span>
+        </div>
+    </div>
+    
+    <div class="question-detail">
+        <h2>{{ question.title }}</h2>
+        <p class="question-description">{{ question.description }}</p>
+        <div class="question-meta">
+            <span class="meta-item">{{ question.user }}</span>
+            <span class="meta-item">{{ question.timestamp|date:"Y-m-d" }}</span>
+            <span class="meta-item">
+                <a href="{% url 'vote' content_type_id=question.get_content_type.id object_id=question.id is_positive=1 %}">👍</a> 
+                {{ question.positive_votes.count }}
+            </span>
+            <span class="meta-item">
+                <a href="{% url 'vote' content_type_id=question.get_content_type.id object_id=question.id is_positive=0 %}">👎</a> 
+                {{ question.negative_votes.count }}
+            </span>
+        </div>
+    </div>
+    
+    <h3 class="questions-header">Respuestas ({{ question.answers.count }})</h3>
+    <div class="answers-list">
+        {% for answer in question.answers.all %}
+        <div class="answer-card {% if answer.user.id == current_user.id %}my-answer{% endif %}">
+            <p>{{ answer.description }}</p>
+            <div class="question-meta">
+                <span class="meta-item">{{ answer.user }}</span>
+                <span class="meta-item">{{ answer.timestamp|date:"Y-m-d" }}</span>
+                <span class="meta-item">
+                    <a href="{% url 'vote' content_type_id=answer.get_content_type.id object_id=answer.id is_positive=1 %}">👍</a> 
+                    {{ answer.positive_votes.count }}
+                </span>
+                <span class="meta-item">
+                    <a href="{% url 'vote' content_type_id=answer.get_content_type.id object_id=answer.id is_positive=0 %}">👎</a> 
+                    {{ answer.negative_votes.count }}
+                </span>
+            </div>
+        </div>
+        {% empty %}
+        <p class="empty-state">No hay respuestas aún</p>
+        {% endfor %}
+    </div>
+    
+    <div class="answer-form">
+        <h3>Tu respuesta</h3>
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                {% if form.description.errors %}
+                <ul class="errorlist">
+                    {% for error in form.description.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}" class="form-control" placeholder="Escribe aquí los detalles de tu respuesta" rows="5">{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
+            </div>
+            
+            {% if form.non_field_errors %}
+            <div class="error-message">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+            
+            <button type="submit" class="btn">Enviar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

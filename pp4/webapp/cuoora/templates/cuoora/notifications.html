@@ -1,0 +1,262 @@
+{% block content %}
+<style>
+    .main-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        color: #1a1a1a;
+    }
+
+    .nav-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid #e0e0e0;
+        margin-bottom: 2rem;
+    }
+
+    .filter-select {
+        padding: 0.5rem 1rem;
+        border: 2px solid #0066cc;
+        border-radius: 1.5rem;
+        background: white;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .nav-button {
+        padding: 0.5rem 1.25rem;
+        border-radius: 1.5rem;
+        background: #f0f2f5;
+        color: #0066cc;
+        text-decoration: none;
+        border: 2px solid transparent;
+        transition: all 0.2s;
+        font-weight: 500;
+    }
+
+    .nav-button:hover {
+        background: #0066cc;
+        color: white;
+        border-color: #0052b3;
+    }
+
+    .username-display {
+        color: #4d4d4d;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .notification-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #ff3b30;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        text-decoration: none;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .notification-badge:hover {
+        background-color: #e0352b;
+        transform: scale(1.1);
+        transition: transform 0.2s;
+    }
+
+    .questions-header {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: #1a1a1a;
+    }
+
+    /* Estilo para las notificaciones siguiendo el de detalles de preguntas */
+    .notification-summary {
+        background: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .notification-summary p {
+        margin: 0;
+    }
+
+    /* Estilo para las tarjetas de notificación */
+    .notification-card {
+        background: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: transform 0.2s;
+    }
+
+    .notification-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .notification-card.unread {
+        border-left: 4px solid #0066cc;
+        background-color: #f5f8ff;
+    }
+
+    .notification-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .notification-text {
+        color: #4d4d4d;
+        line-height: 1.5;
+        margin-bottom: 0;
+    }
+
+    .notification-actions {
+        margin-top: 0.5rem;
+    }
+
+    .notification-actions a {
+        color: #0066cc;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .notification-actions a:hover {
+        text-decoration: underline;
+    }
+
+    .notification-meta {
+        font-size: 0.85rem;
+        color: #808080;
+    }
+
+    .btn {
+        padding: 0.5rem 1.25rem;
+        border-radius: 1.5rem;
+        background: #0066cc;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-sm {
+        padding: 0.3rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+    }
+
+    .btn:hover {
+        background: #0052b3;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #999;
+        font-size: 1.1rem;
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    @media (max-width: 640px) {
+        .nav-section {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .action-buttons {
+            width: 100%;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+
+        .notification-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .notification-meta {
+            margin-top: 0.5rem;
+        }
+    }
+</style>
+
+<div class="main-container">
+    <div class="nav-section">
+        <h2 class="questions-header">Notificaciones</h2>
+        
+        <div class="action-buttons">
+            <a href="/" class="nav-button">Home</a>
+            <div class="user-info">
+                <span class="username-display">{{ request.user.username }}</span>
+            </div>
+        </div>
+    </div>
+     
+    <div class="notification-summary">
+        <p>{{ notifications|length }} notificación(es)</p>
+        {% if unread_notifications %}
+            <a href="{% url 'mark_all_as_read' %}" class="btn btn-sm btn-secondary">Marcar todas como leídas</a>
+        {% endif %}
+    </div>
+    
+    {% if notifications %}
+        <div class="notifications-list">
+            {% for notification in notifications %}
+                <div class="notification-card {% if not notification.read %}unread{% endif %}">
+                    <div class="notification-content">
+                        <p class="notification-text">{{ notification.text }}</p>
+                        {% if not notification.read %}
+                            <span class="notification-meta">Nueva</span>
+                        {% endif %}
+                    </div>
+                    <div class="notification-actions">
+                        <a href="{{ notification.link }}">Ver</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-state">No tienes notificaciones.</p>
+    {% endif %}
+</div>
+{% endblock %}

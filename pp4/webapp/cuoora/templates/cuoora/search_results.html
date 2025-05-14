@@ -1,0 +1,239 @@
+{% block content %}
+<style>
+    /* Estilos base */
+    .main-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        color: #1a1a1a;
+    }
+
+    /* Filtros y navegación */
+    .nav-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid #e0e0e0;
+        margin-bottom: 2rem;
+    }
+
+    /* Nuevos estilos para el cuadro de búsqueda */
+    .search-container {
+        flex-grow: 1;
+        max-width: 300px;
+        margin: 0 1rem;
+    }
+
+    .search-container form {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .search-container input {
+        flex-grow: 1;
+        padding: 0.5rem 1rem;
+        border: 2px solid #0066cc;
+        border-radius: 1.5rem;
+        font-size: 0.9rem;
+        outline: none;
+        transition: all 0.2s;
+    }
+
+    .search-container input:focus {
+        border-color: #0052b3;
+        box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+    }
+
+    .search-container button {
+        padding: 0.5rem 1.25rem;
+        border: none;
+        border-radius: 1.5rem;
+        background: #0066cc;
+        color: white;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .search-container button:hover {
+        background: #0052b3;
+    }
+
+    .filter-select {
+        padding: 0.5rem 1rem;
+        border: 2px solid #0066cc;
+        border-radius: 1.5rem;
+        background: white;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .filter-select:hover {
+        background: #f5f8ff;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .nav-button {
+        padding: 0.5rem 1.25rem;
+        border-radius: 1.5rem;
+        background: #f0f2f5;
+        color: #0066cc;
+        text-decoration: none;
+        border: 2px solid transparent;
+        transition: all 0.2s;
+        font-weight: 500;
+    }
+
+    .nav-button:hover {
+        background: #0066cc;
+        color: white;
+        border-color: #0052b3;
+    }
+
+    .username-display {
+        color: #4d4d4d;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    /* Listado de preguntas */
+    .questions-header {
+        font-size: 1.1rem;
+        color: #4d4d4d;
+        margin-bottom: 1.5rem;
+        padding-left: 0.5rem;
+    }
+
+    .question-card {
+        background: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: transform 0.2s;
+    }
+
+    .question-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .question-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .question-title a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .question-title a:hover {
+        color: #0066cc;
+        text-decoration: underline;
+    }
+
+    .question-description {
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 1.25rem;
+    }
+
+    .question-meta {
+        display: flex;
+        gap: 1.5rem;
+        font-size: 0.85rem;
+        color: #808080;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .meta-item:not(:last-child)::after {
+        content: "•";
+        margin-left: 1.5rem;
+        color: #ccc;
+    }
+
+    /* Estado vacío */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #999;
+        font-size: 1.1rem;
+    }
+
+    @media (max-width: 640px) {
+        .nav-section {
+            flex-direction: column;
+        }
+        
+        .action-buttons {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .search-container {
+            max-width: 100%;
+            margin: 0;
+            order: -1;
+        }
+    }
+</style>
+
+<div class="main-container">
+    <div class="nav-section">
+        {% if query %}
+        <h2 class="questions-header">Resultados de búsqueda</h2>
+        
+        <div class="action-buttons">
+            <a href="{% url 'topic_list' %}" class="nav-button">Topics</a>
+            <a href="/" class="nav-button">Home</a>
+            <span class="username-display">{{ request.user.username }}</span>
+        </div>
+    </div>
+    
+    <div class="search-container">
+        <form action="{% url 'search_questions' %}" method="get" class="search-form">
+            <input type="text" name="query" placeholder="Buscar preguntas..." value="{{ query }}">
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+
+    {% if questions %}
+            <p>{{ questions.count }} pregunta(s) encontrada(s)</p>
+            
+            <div class="questions-list">
+                {% for question in questions %}
+                <div class="question-card">
+                    <h3 class="question-title"><a href="{% url 'question_detail' question.id %}">{{ question.title }}</a></h3>
+                    <p class="question-description">{{ question.description }}</p>
+                    <div class="question-meta">
+                        <span class="meta-item">{{ question.user }}</span>
+                        <span class="meta-item">{{ question.timestamp|date:"Y-m-d" }}</span>
+                        <span class="meta-item">👍 {{ question.positive_votes.count }}</span>
+                        <span class="meta-item">👎 {{ question.negative_votes.count }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="empty-state">No hay preguntas disponibles</p>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No se encontraron preguntas con "{{ query }}".</p>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
